@@ -253,7 +253,7 @@ def access_check_command(accounts, config, args):
         try:
             file_name = "account-data/{}/{}/{}".format(
                 account["name"],
-                "us-east-1",
+                "us-gov-west-1",
                 "iam-get-account-authorization-details.json",
             )
             iam = json.load(open(file_name))
@@ -295,7 +295,7 @@ def access_check_command(accounts, config, args):
             # Get IAM boundary
             try:
                 file_name = "account-data/{}/{}/{}/{}".format(
-                    account["name"], "us-east-1", "iam-get-role", role["RoleName"]
+                    account["name"], "us-gov-west-1", "iam-get-role", role["RoleName"]
                 )
                 get_user_response = json.load(open(file_name))
             except:
@@ -389,7 +389,7 @@ def access_check_command(accounts, config, args):
             # Get IAM boundary
             try:
                 file_name = "account-data/{}/{}/{}/{}".format(
-                    account["name"], "us-east-1", "iam-get-user", user["UserName"]
+                    account["name"], "us-gov-west-1", "iam-get-user", user["UserName"]
                 )
                 get_user_response = json.load(open(file_name))
             except:

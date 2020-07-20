@@ -1,6 +1,7 @@
 import urllib
 import os
 import json
+import logging
 
 
 def query_aws(account, query, region=None):
@@ -23,6 +24,15 @@ def get_parameter_file(region, service, function, parameter_value):
         "{}-{}".format(service, function),
         urllib.parse.quote_plus(parameter_value),
     )
+
+    print("FILE_NAME: " + file_name)
+
+    file_exists = os.path.isfile(file_name)
+    print("FILE_EXISTS: " + str(file_exists))
+
+    file_size = os.path.getsize(file_name)
+    print("FILE_SIZE: " + str(file_size))
+
     if not os.path.isfile(file_name):
         return None
     if os.path.getsize(file_name) <= 4:

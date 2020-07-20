@@ -6,6 +6,7 @@ import pyjq
 import yaml
 import sys
 from netaddr import IPNetwork
+import logging
 
 from shared.nodes import Account, Region
 from shared.query import query_aws, get_parameter_file
@@ -268,21 +269,19 @@ def get_account_stats(account, all_resources=False):
 
             # S3 buckets require special code to identify their location
             if resource["name"] == "S3 buckets":
-                if region.name == "us-east-1":
+                if region.name == "us-gov-west-1":
                     buckets = pyjq.all(
                         ".Buckets[].Name",
                         query_aws(region.account, "s3-list-buckets", region),
                     )
                     for bucket in buckets:
                         # Get the bucket's location
-                        bucket_region = get_parameter_file(
-                            region, "s3", "get-bucket-location", bucket
-                        )["LocationConstraint"]
+                        bucket_region = get_parameter_file(region, "s3", "get-bucket-location", bucket)["LocationConstraint"]
 
                         # Convert the value to a name.
                         # See https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region
                         if bucket_region is None:
-                            bucket_region = "us-east-1"
+                            bucket_region = "us-gov-west-1"
                         elif bucket_region == "EU":
                             bucket_region = "eu-west-1"
 
@@ -304,10 +303,10 @@ def get_account_stats(account, all_resources=False):
 def get_us_east_1(account):
     for region_json in get_regions(account):
         region = Region(account, region_json)
-        if region.name == "us-east-1":
+        if region.name == "us-gov-west-1":
             return region
 
-    raise Exception("us-east-1 not found")
+    raise Exception("us-gov-west-1 not found")
 
 
 def iso_date(d):

@@ -197,7 +197,7 @@ def call_function(outputfile, handler, method_to_call, parameters, check, summar
 
 def collect(arguments):
     logging.getLogger("botocore").setLevel(logging.WARN)
-    account_dir = "./{}".format(arguments.account_name)
+    account_dir = "{}".format(arguments.account_name)
 
     summary = []
 
@@ -208,13 +208,13 @@ def collect(arguments):
     make_directory("account-data/{}".format(account_dir))
 
     # Identify the default region used by global services such as IAM
-    default_region = os.environ.get("AWS_REGION", "us-east-1")
+    default_region = os.environ.get("AWS_REGION", "us-gov-west-1")
     if 'gov-' in default_region:
         default_region = 'us-gov-west-1'
     elif 'cn-' in default_region:
         default_region = 'cn-north-1'
     else:
-        default_region = 'us-east-1'
+        default_region = 'us-gov-west-1'
 
     regions_filter = None
     if len(arguments.regions_filter) > 0:
@@ -301,6 +301,29 @@ def collect(arguments):
         "s3control",
         "cloudfront",
         "organizations",
+        "rds",
+        "elb",
+        "ec2",
+        "elbv2",
+        "sqs",
+        "ses",
+        "sns",
+        "autoscaling",
+        "cloudwatch",
+        "config",
+        "elasticache",
+        "efs",
+        "es",
+        "events",
+        "glacier",
+        "kms",
+        "lambda",
+        "ecs",
+        "eks",
+        "logs",
+        "apigateway",
+        "guardduty",
+        "accessanalyzer"
     ]
 
     with open("collect_commands.yaml", "r") as f:
@@ -323,7 +346,7 @@ def collect(arguments):
                 runner["Service"]
             ):
                 print(
-                    "  Skipping region {}, as {} does not exist there".format(
+                    "  Skipping region {}, as {} ".format(
                         region["RegionName"], runner["Service"]
                     )
                 )
@@ -426,29 +449,39 @@ def collect(arguments):
                                 "ec2-describe-vpcs.json"
                             )
 
-                            with open(describe_vpcs_file, "r") as f2:
-                                describe_vpcs = json.load(f2)
+                            print("DESCRIBE_VPCS_FILE: " + describe_vpcs_file)
+                            print("DESCRIBE_VPCS_FILE: " + describe_vpcs_file)
+                            print("DESCRIBE_VPCS_FILE: " + describe_vpcs_file)
+                            print("DESCRIBE_VPCS_FILE: " + describe_vpcs_file)
+                            print("DESCRIBE_VPCS_FILE: " + describe_vpcs_file)
+                            print("DESCRIBE_VPCS_FILE: " + describe_vpcs_file)
+                            print("DESCRIBE_VPCS_FILE: " + describe_vpcs_file)
+                            print("DESCRIBE_VPCS_FILE: " + str(os.path.isfile(describe_vpcs_file)))
 
-                                for vpc in describe_vpcs["Vpcs"]:
-                                    outputfile = (
-                                        action_path
-                                        + "/"
-                                        + urllib.parse.quote_plus(collect_region["RegionName"])
-                                        + "/"
-                                        + urllib.parse.quote_plus(vpc["VpcId"])
-                                    )
+                            if os.path.isfile(describe_vpcs_file):
+                                with open(describe_vpcs_file, "r") as f2:
+                                    describe_vpcs = json.load(f2)
 
-                                    call_parameters = {}
-                                    call_parameters["VPCRegion"] = collect_region["RegionName"]
-                                    call_parameters["VPCId"] = vpc["VpcId"]
-                                    call_function(
-                                        outputfile,
-                                        handler,
-                                        method_to_call,
-                                        call_parameters,
-                                        runner.get("Check", None),
-                                        summary,
-                                    )
+                                    for vpc in describe_vpcs["Vpcs"]:
+                                        outputfile = (
+                                            action_path
+                                            + "/"
+                                            + urllib.parse.quote_plus(collect_region["RegionName"])
+                                            + "/"
+                                            + urllib.parse.quote_plus(vpc["VpcId"])
+                                        )
+
+                                        call_parameters = {}
+                                        call_parameters["VPCRegion"] = collect_region["RegionName"]
+                                        call_parameters["VPCId"] = vpc["VpcId"]
+                                        call_function(
+                                            outputfile,
+                                            handler,
+                                            method_to_call,
+                                            call_parameters,
+                                            runner.get("Check", None),
+                                            summary,
+                                        )
 
             elif dynamic_parameter is not None:
                 # Set up directory for the dynamic value

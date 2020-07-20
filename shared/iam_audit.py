@@ -179,7 +179,7 @@ def find_admins_in_account(
 
     try:
         file_name = "account-data/{}/{}/{}".format(
-            account.name, "us-east-1", "iam-get-account-authorization-details.json"
+            account.name, "us-gov-west-1", "iam-get-account-authorization-details.json"
         )
         iam = json.load(open(file_name))
     except:
